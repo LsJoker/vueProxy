@@ -5,14 +5,17 @@
     <title>{{ title }}</title>
     
 </head>
-<body id="app">
-    <h1>{{title}}</h1>
-    <button v-on:click="clickMe">click me!</button>
+<body>
+    <div id="app">
+        <h1 v-on:click="clickMe">{{title}}</h1>
+        <button >click me!</button>
+    </div>
     <!--vue-ssr-outlet-->
 </body>
-<script src="../public/js/index.js"></script>
+<script src="../public/js/indexClass.js"></script>
 <script type="text/javascript">
-    new SelfVue({
+    // new SelfVue({
+    new Vue({
         el: '#app',
         data: {
             title: 'hello world',
