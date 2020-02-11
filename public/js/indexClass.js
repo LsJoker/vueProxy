@@ -41,13 +41,12 @@ class Observer {
   observe(data) {
     let self = this;
     if (!data || typeof data !== 'object') {
-        return;
-        
+        return;        
     }
     Object.keys(data).forEach(function(key) {
-        console.log(this);
-        this.defineReactive(data, key, data[key]);
-        this.observe(data[key]); // 递归遍历所有子属性
+        console.log(self);
+        self.defineReactive(data, key, data[key]);
+        self.observe(data[key]); // 递归遍历所有子属性
     });
   }
   defineReactive(data, key, val) {
@@ -73,61 +72,63 @@ class Observer {
   }
 }
 
-
 // Dep.target = null;
-
 //订阅器
-function Dep () {
-  this.subs = [];
-}
-Dep.prototype = {
-  addSub: function(sub) {
-      this.subs.push(sub);
-  },
-  notify: function() {
-      this.subs.forEach(function(sub) {
-          sub.update();
-      });
+class Dep{
+  constructor(){
+      //订阅的数组
+      this.subs = []
   }
-};
+  //添加订阅
+  addSub(watcher){
+      this.subs.push(watcher);
+  }
+  notify(){
+      //调用watcher的更新方法
+      this.subs.forEach(watcher => watcher.update());
+  }
+}
 
 //订阅者
-function Watcher(vm, exp, cb) {
-  this.cb = cb;
-  this.vm = vm;
-  this.exp = exp;
-  this.value = this.get();  // 将自己添加到订阅器的操作
-}
-Watcher.prototype = {
-  update: function() {
-      this.run();
-  },
-  run: function() {
-      var value = this.vm.$data[this.exp];
-      var oldVal = this.value;
-      if (value !== oldVal) {
-          this.value = value;
-          this.cb.call(this.vm, value, oldVal);
-      }
-  },
-  get: function() {
-      Dep.target = this;  // 缓存自己
-      var value = this.vm.$data[this.exp]  // 强制执行监听器里的get函数
-      Dep.target = null;  // 释放自己
-      return value;
+class Watcher {
+  constructor(vm, exp, cb){
+    this.cb = cb;
+    this.vm = vm;
+    this.exp = exp;
+    this.value = this.get();  // 将自己添加到订阅器的操作
   }
-};
+
+  get() {
+    Dep.target = this;  // 缓存自己
+    var value = this.vm.$data[this.exp]  // 强制执行监听器里的get函数
+    Dep.target = null;  // 释放自己
+    return value;
+  }
+
+  update() {
+    this.run();
+  }
+  
+  run() {
+    var value = this.vm.$data[this.exp];
+    var oldVal = this.value;
+    if (value !== oldVal) {
+        this.value = value;
+        this.cb.call(this.vm, value, oldVal);
+    }
+  }
+}
 
 //compil编译
-function Compile(el, vm) {
-  this.vm = vm;
-  this.el = document.querySelector(el);
-  this.fragment = null;
-  this.init();
-}
+class Compile {
+  constructor(el, vm) {
+    this.vm = vm;
+    this.el = document.querySelector(el);
+    this.fragment = null;
+    this.init();
+  }
 
-Compile.prototype = {
-  init: function() { 
+  init(){
     if (this.el) {
       this.fragment = this.nodeToFragment(this.el);
       this.compileElement(this.fragment);
@@ -135,8 +136,43 @@ Compile.prototype = {
     } else {
         console.log('Dom元素不存在');
     } 
-  },
-  compile:function(node) {
+  }
+
+  //生成dom片段
+  nodeToFragment(el){
+    var fragment = document.createDocumentFragment();
+    var child = el.firstChild;
+    while (child) {
+        // 将Dom元素移入fragment中
+        fragment.appendChild(child);
+        child = el.firstChild;
+    }
+    return fragment;
+  }
+
+  //{{}}指令
+  compileElement(el){
+    var childNodes = el.childNodes;
+    var self = this;
+    [].slice.call(childNodes).forEach(function(node) {
+        var reg = /\{\{(.*)\}\}/;
+        var text = node.textContent;
+        if (self.isElementNode(node)) {  
+          self.compile(node);
+        } else if (self.isTextNode(node) && reg.test(text)) {  // 判断是否是符合这种形式{{}}的指令
+            self.compileText(node, reg.exec(text)[1]);
+        }
+        if (node.childNodes && node.childNodes.length) {
+            self.compileElement(node);  // 继续递归遍历子节点
+        }
+    });
+  }
+
+  isElementNode(node) {
+    return node.nodeType == 1;
+  }
+
+  compile(node) {
     var nodeAttrs = node.attributes;
     var self = this;
     Array.prototype.forEach.call(nodeAttrs, function(attr) {
@@ -152,16 +188,25 @@ Compile.prototype = {
             node.removeAttribute(attrName);
         }
     });
-  },
-  compileEvent: function (node, vm, exp, dir) {
+  }
+
+  isDirective(attr) {
+    return attr.indexOf('v-') == 0;
+  }
+  
+  isEventDirective(dir) {
+    return dir.indexOf('on:') === 0;
+  }
+
+  compileEvent (node, vm, exp, dir) {
     var eventType = dir.split(':')[1];
     var cb = vm.methods && vm.methods[exp];
-
     if (eventType && cb) {
         node.addEventListener(eventType, cb.bind(vm), false);
     }
-  },
-  compileModel: function (node, vm, exp, dir) {
+  }
+
+  compileModel(node, vm, exp, dir) {
     var self = this;
     var val = this.vm[exp];
     this.modelUpdater(node, val);
@@ -177,56 +222,14 @@ Compile.prototype = {
         self.vm[exp] = newValue;
         val = newValue;
     });
-  },
-  //生成dom片段
-  nodeToFragment:function(el){
-    var fragment = document.createDocumentFragment();
-    var child = el.firstChild;
-    while (child) {
-        // 将Dom元素移入fragment中
-        fragment.appendChild(child);
-        child = el.firstChild
-    }
-    return fragment;
-  },
-  //{{}}指令
-  compileElement:function(el){
-    var childNodes = el.childNodes;
-    var self = this;
-    [].slice.call(childNodes).forEach(function(node) {
-        var reg = /\{\{(.*)\}\}/;
-        var text = node.textContent;
-        if (self.isElementNode(node)) {  
-          self.compile(node);
-        } else if (self.isTextNode(node) && reg.test(text)) {  // 判断是否是符合这种形式{{}}的指令
-            self.compileText(node, reg.exec(text)[1]);
-        }
+  }
 
-        if (node.childNodes && node.childNodes.length) {
-            self.compileElement(node);  // 继续递归遍历子节点
-        }
-    });
-  },
-  updateText: function (node, value) {
-    node.textContent = typeof value == 'undefined' ? '' : value;
-  },
-  isTextNode: function(node) {
-    return node.nodeType == 3;
-  },
-  isDirective: function(attr) {
-    return attr.indexOf('v-') == 0;
-  },
-  modelUpdater: function(node, value, oldValue) {
+  modelUpdater(node, value) {
     node.value = typeof value == 'undefined' ? '' : value;
-  },
-  isEventDirective: function(dir) {
-      return dir.indexOf('on:') === 0;
-  },
-  isElementNode: function (node) {
-      return node.nodeType == 1;
-  },
+  }
+
   //compileText
-  compileText:function(node, exp){
+  compileText(node, exp){
     var self = this;
     var initText = this.vm[exp];
     this.updateText(node, initText);  // 将初始化的数据初始化到视图中
@@ -234,6 +237,13 @@ Compile.prototype = {
         self.updateText(node, value);
     });
   }
-};
 
+  updateText (node, value) {
+    node.textContent = typeof value == 'undefined' ? '' : value;
+  }
+
+  isTextNode(node) {
+    return node.nodeType == 3;
+  }
+}
 
