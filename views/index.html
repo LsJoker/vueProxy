@@ -12,26 +12,27 @@
     </div>
     <!--vue-ssr-outlet-->
 </body>
-<script src="../public/js/indexClass.js"></script>
+<!-- <script src="../public/js/indexClass.js"></script> -->
+<script src="../public/js/callAndBind.js"></script>
 <script type="text/javascript">
     // new SelfVue({
-    new Vue({
-        el: '#app',
-        data: {
-            title: 'hello world',
-            name: 'canfoo'
-        },
-        methods: {
-            clickMe: function () {
-                this.title = 'hello world';
-            }
-        },
-        mounted: function () {
-            window.setTimeout(() => {
-                this.title = '你好';
-            }, 1000);
-        }
-    });
+    // new Vue({
+    //     el: '#app',
+    //     data: {
+    //         title: 'hello world',
+    //         name: 'canfoo'
+    //     },
+    //     methods: {
+    //         clickMe: function () {
+    //             this.title = 'hello world';
+    //         }
+    //     },
+    //     mounted: function () {
+    //         window.setTimeout(() => {
+    //             this.title = '你好';
+    //         }, 1000);
+    //     }
+    // });
  
 </script>
 </html>
