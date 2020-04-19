@@ -61,7 +61,42 @@ Object.prototype.__proto__ === null;
 /**
  * 1.call原理
  */
+Function.prototype.myCall = function(context){
+	//指向当前this
+	context = context ? Object(context) : window;
+	context.fn = this;
+	//调用
+	let res = context.fn([...arguments].slice(1));
+	//删除原函数
+	delete context.fn;
+	return res
+}
 
 
+/**
+ * 1.apply原理
+ */
+Function.prototype.myApply = function(context){
+	context = context ? Object(context) : window;
+	context.fn = this;
+	let res = context.fn([...arguments][1]);
+	delete context.fn;
+	return res
+}
+
+
+/**
+ * 1.bind原理
+ * 
+ */
+Function.prototype.myBind = function(context){
+	context = context ? Object(context) : window;
+	context.fn = this;
+	let res = function(){
+		return context.fn.apply(context,[...arguments].slice(1));
+	};
+	// delete context.fn;
+	return res
+}
 
 
