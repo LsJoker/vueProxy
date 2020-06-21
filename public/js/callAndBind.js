@@ -8,7 +8,8 @@
   
   原型以及原型链相关知识：
 	1.对象具有原型属性_proto_,实例对象指向其构造函数的原型对象prototype，普通对象则是Object.prototype
-	2.函数具有原型属性以及原型对象prototype，prototype是指向函数本身的一个指针，function.prototype.constructor === function，他们的构造函数都是Function,属于Function的实例对象，其_proto_指向Function.prototype
+	2.函数具有原型属性以及原型对象prototype，prototype是指向函数本身的一个指针，
+	function.prototype.constructor === function，他们的构造函数都是Function,属于Function的实例对象，其_proto_指向Function.prototype
 	  Function本身也是一种构造函数，所以Function._proto_ === Function.prototype,所有的函数的prototype又都是对象，
 	  既Function.prototype._proto_ === Object.prototype
 	3.Object本身也是一种特殊的构造函数，所以Object._proto_ === Function.prototype
