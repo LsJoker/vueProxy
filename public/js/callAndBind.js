@@ -99,4 +99,24 @@ Function.prototype.myBind = function(context){
 	return res
 }
 
+//组合继承,复制原型的属性至本身属性，复制原型的方法至本身的原型对象上
+function Girl(name){
+	this.advantages = ['cute','nice'];
+	this.name = name
+}
+Girl.prototype.sayName = function(){
+	console.log(this.name);
+}
+function girlFriends (name) {
+	Girl.call(this,name);
+}
+girlFriends.prototype = new Girl();
+let girlFriendOne = new girlFriends("one");
+girlFriendOne.advantages.push('sexy');
+console.log(girlFriendOne.advantages);
+girlFriendOne.sayName();
 
+let girlFriendTwo = new girlFriends("2");
+girlFriendTwo.advantages.push('beauty');
+console.log(girlFriendTwo.advantages);
+girlFriendTwo.sayName();
