@@ -108,9 +108,9 @@ Girl.prototype.sayName = function(){
 	console.log(this.name);
 }
 function girlFriends (name) {
-	Girl.call(this,name);
+	Girl.call(this,name);//构造函数第一次调用
 }
-girlFriends.prototype = new Girl();
+girlFriends.prototype = new Girl();//原型拷贝第二次调用
 let girlFriendOne = new girlFriends("one");
 girlFriendOne.advantages.push('sexy');
 console.log(girlFriendOne.advantages);
@@ -120,3 +120,19 @@ let girlFriendTwo = new girlFriends("2");
 girlFriendTwo.advantages.push('beauty');
 console.log(girlFriendTwo.advantages);
 girlFriendTwo.sayName();
+
+//以上方式会调用两次父类，为此可以为父类创建副本
+function Girl(name){
+	this.advantages = ['cute','nice'];
+	this.name = name
+}
+Girl.prototype.sayName = function(){
+	console.log(this.name);
+}
+function girlFriends (name) {
+	Girl.call(this,name);//构造函数第一次调用
+}
+function inheritPrototype (subObj,superObj) {
+	subObj.prototype = Object.create(superObj.prototype);
+	subObj.constructor 
+}
