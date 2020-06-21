@@ -100,4 +100,40 @@ Function.prototype.myBind = function(context){
 	return res
 }
 
+//组合继承,复制原型的属性至本身属性，复制原型的方法至本身的原型对象上
+function Girl(name){
+	this.advantages = ['cute','nice'];
+	this.name = name
+}
+Girl.prototype.sayName = function(){
+	console.log(this.name);
+}
+function girlFriends (name) {
+	Girl.call(this,name);//构造函数第一次调用
+}
+girlFriends.prototype = new Girl();//原型拷贝第二次调用
+let girlFriendOne = new girlFriends("one");
+girlFriendOne.advantages.push('sexy');
+console.log(girlFriendOne.advantages);
+girlFriendOne.sayName();
 
+let girlFriendTwo = new girlFriends("2");
+girlFriendTwo.advantages.push('beauty');
+console.log(girlFriendTwo.advantages);
+girlFriendTwo.sayName();
+
+//以上方式会调用两次父类，为此可以为父类创建副本
+function Girl(name){
+	this.advantages = ['cute','nice'];
+	this.name = name
+}
+Girl.prototype.sayName = function(){
+	console.log(this.name);
+}
+function girlFriends (name) {
+	Girl.call(this,name);//构造函数第一次调用
+}
+function inheritPrototype (subObj,superObj) {
+	subObj.prototype = Object.create(superObj.prototype);
+	subObj.constructor 
+}
