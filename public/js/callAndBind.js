@@ -8,7 +8,8 @@
   
   原型以及原型链相关知识：
 	1.对象具有原型属性_proto_,实例对象指向其构造函数的原型对象prototype，普通对象则是Object.prototype
-	2.函数具有原型属性以及原型对象prototype，prototype是指向函数本身的一个指针，function.prototype.constructor === function，他们的构造函数都是Function,属于Function的实例对象，其_proto_指向Function.prototype
+	2.函数具有原型属性以及原型对象prototype，prototype是指向函数本身的一个指针，
+	function.prototype.constructor === function，他们的构造函数都是Function,属于Function的实例对象，其_proto_指向Function.prototype
 	  Function本身也是一种构造函数，所以Function._proto_ === Function.prototype,所有的函数的prototype又都是对象，
 	  既Function.prototype._proto_ === Object.prototype
 	3.Object本身也是一种特殊的构造函数，所以Object._proto_ === Function.prototype
@@ -99,3 +100,54 @@ Function.prototype.myBind = function(context){
 	return res
 }
 
+//组合继承,复制原型的属性至本身属性，复制原型的方法至本身的原型对象上
+// function Girl(name){
+// 	this.advantages = ['cute','nice'];
+// 	this.name = name
+// }
+// Girl.prototype.sayName = function(){
+// 	console.log(this.name);
+// }
+// function girlFriends (name) {
+// 	Girl.call(this,name);//构造函数第一次调用
+// }
+// girlFriends.prototype = new Girl();//原型拷贝第二次调用
+// let girlFriendOne = new girlFriends("one");
+// girlFriendOne.advantages.push('sexy');
+// console.log(girlFriendOne.advantages);
+// girlFriendOne.sayName();
+
+// let girlFriendTwo = new girlFriends("2");
+// girlFriendTwo.advantages.push('beauty');
+// console.log(girlFriendTwo.advantages);
+// girlFriendTwo.sayName();
+
+//以上方式会调用两次父类，为此可以为父类创建副本
+function Girl(name){
+	this.advantages = ['cute','nice'];
+	this.name = name
+}
+Girl.prototype.sayName = function(){
+	console.log(this.name);
+}
+function girlFriends (name) {
+	Girl.call(this,name);//构造函数第一次调用
+}
+function inheritPrototype (subObj,superObj) {
+	let prototypeObj = Object.create(superObj.prototype);
+	prototypeObj.constructor = subObj;
+	subObj.prototype = prototypeObj;
+
+}
+
+inheritPrototype(girlFriends,Girl);
+
+let girlFriendOne = new girlFriends("one");
+girlFriendOne.advantages.push('sexy');
+console.log(girlFriendOne.advantages);
+girlFriendOne.sayName();
+
+let girlFriendTwo = new girlFriends("2");
+girlFriendTwo.advantages.push('beauty');
+console.log(girlFriendTwo.advantages);
+girlFriendTwo.sayName();
