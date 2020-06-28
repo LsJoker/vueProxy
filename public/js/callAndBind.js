@@ -99,4 +99,3 @@ Function.prototype.myBind = function(context){
 	return res
 }
 
-
