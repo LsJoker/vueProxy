@@ -151,3 +151,25 @@ let girlFriendTwo = new girlFriends("2");
 girlFriendTwo.advantages.push('beauty');
 console.log(girlFriendTwo.advantages);
 girlFriendTwo.sayName();
+
+//经典Date继承
+//避免没有原型设置方法
+Object.setPrototypeOf = Object.setPrototypeOf || function(obj,proto){
+	obj.__proto__ = proto;
+};
+function myDate(){
+	var dateInt = new(Function.prototype.bind.apply(Date,[Date].concat(Array.prototype.slice.call(arguments))))();
+	Object.setPrototypeOf(dateInt,myDate.prototype);
+	return dateInt;
+}
+//将原型指向Date原型
+Object.setPrototypeOf(MyDate.prototype, Date.prototype)
+
+MyDate.prototype.getTest = function getTest() {
+    return this.getTime();
+};
+
+var date = new MyDate();
+
+// 正常输出，譬如1515638988725
+console.log(date.getTest());
