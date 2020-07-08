@@ -173,3 +173,21 @@ var date = new MyDate();
 
 // 正常输出，譬如1515638988725
 console.log(date.getTest());
+
+
+//Object.create(),新建一个对象以原对象为原型，原理
+Object.create = function(obj) {
+	let a = {};
+	a.__proto__ = obj;
+	return a;
+}
+Object.create = function(obj) {
+	let a = {};
+	Object.setPrototypeOf(a,obj);
+	return a;
+}
+Object.create = function(obj) {
+	let a = function(){};
+	a.prototype = obj;
+	return new a();
+}
