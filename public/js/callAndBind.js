@@ -191,3 +191,24 @@ Object.create = function(obj) {
 	a.prototype = obj;
 	return new a();
 }
+//算法问题，汉诺塔算法
+// if(n==0) //如果全部移过去，就返回
+// 			return;
+// 		else {
+// 			hanio(n-1, x, z, y);   //将n-1个在A柱子的盘子通过c柱子移动到B柱子
+// 			move(n, x, z);			//将A柱子上编号为n的盘子移动到c柱子
+// 			hanio(n- 1, y, x, z);	 //将在B柱子的n-1盘子通过A柱子移动到C柱子		
+// 		}
+// disc,3:hanoi(2,src,dst,aux)
+
+// disc,2:hanoi(1,src,aux,dst)
+// 1,
+
+function hanoi(discs,src,aux,dst) {
+	if (discs>0) {
+		hanoi(discs-1,src,dst,aux);
+		console.log("将SRC"+discs+"移动到"+dst);
+		hanoi(discs-1,aux,src,dst);
+	}
+}
+hanoi(4,"a","b","c");
