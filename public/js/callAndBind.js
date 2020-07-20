@@ -212,3 +212,12 @@ function hanoi(discs,src,aux,dst) {
 	}
 }
 hanoi(4,"a","b","c");
+
+//js,new的实现
+function newNew (){
+	var obj  = new Object();
+	var objConstructor  = Array.unshift.call(arguments);
+	obj.__proto__ = objConstructor.prototype;
+	var ret = Constructor.apply(obj, arguments);
+	return typeof ret === 'object' ? ret : obj;
+}
