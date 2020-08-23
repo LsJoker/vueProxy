@@ -1,12 +1,11 @@
 //promise
 //基于promiseA+
-function Promise (fn){
+function Promise (fnc){
 	//存回调，值，及状态
 	const cbs = [];
 	let val = null;
 	let state = "pending";
-	//fn执行
-	fn(resolve);
+	
 
 	function resolve (newVal) {
 		//fulllfilled状态返回
@@ -46,12 +45,12 @@ function Promise (fn){
 			state = "rejected";
 			val = error;
 			//下一个回调执行
-			handleCb(newVal);
+			handleCb(error);
 		}
 		setTimeout(fn,0);
 	}
 	function handleCb (newVal) {
-		while(cbs.length>1) {
+		while(cbs.length>0) {
 			const cb = cbs.shift();
 			handle(cb);
 		}
@@ -68,8 +67,14 @@ function Promise (fn){
 			next(val);
 			return;
 		}
-		const res = cb(val);
-		next(val);
+		//做异常处理
+		try {
+			const res = cb(val);
+			next(val);
+		} catch (ex){
+			callback.reject(ex)
+		}
+		
 		// if (state === "fullfilled") {
 		// 	if(!callback.onFulfilled){
 		// 		callback.resolve(value)
@@ -84,14 +89,35 @@ function Promise (fn){
 	//then方法
 	this.then = (onfullfilled,onrejected)=>{
 		return new Promise((resolve,reject)=>{
-			handleCb({resolve,onfullfilled,onrejected,reject})
+			handle({resolve,onfullfilled,onrejected,reject})
 		})
+	}
+	//catch
+	this.catch=function(onError) {
+		this.then(null,onError)
+	}
+	//finally,最后执行的操作，任意状态最后都要执行
+	this.finally=function(onDone){
+		this.then(onDone,onDone);
 	} 
+	//fn执行
+	try {
+		fnc(resolve,reject);
+	} catch (ex) {
+		reject(ex);
+	}
+	
 }
 //原理参照
 new Promise(function(resolve,reject){
 	// resolve(1)
 	// reject(0)
+	console.log(32)
+	resolve(1)
 }).then(function(resolve,reject) {
-	
+	console.lo(resolve);
+}).catch((ex)=>{
+	debugger
+	console.log(ex)
 })
+
