@@ -99,7 +99,29 @@ function Promise (fnc){
 	//finally,最后执行的操作，任意状态最后都要执行
 	this.finally=function(onDone){
 		this.then(onDone,onDone);
-	} 
+	}
+	//resolve 无参数 [直接返回一个resolved状态的 Promise 对象]
+	// 普通数据对象 [直接返回一个resolved状态的 Promise 对象]
+	// 一个Promise实例 [直接返回当前实例]
+	// 一个thenable对象(thenable对象指的是具有then方法的对象) [转为 Promise 对象，并立即执行thenable对象的then方法。]
+	this.resolve = function(value){
+		if (value instanceof Promise) {
+			return value
+		} else if (value && typeof value.then === "function") {
+			const thenFun = value.then;
+			return new Promise ((resolve)=>{
+				thenFun(resolve)
+			})
+		} else if (value) {
+			return new Promise(resolve=>resolve(value))
+		} else {
+			return new Promise(resolve=>resolve)
+		}
+	}
+	//reject和resolve同理，但是reject状态确定，只能是rejected状态
+	this.reject = function(value){
+		return new Promise((resolve,reject)=>reject(value))
+	}
 	//fn执行
 	try {
 		fnc(resolve,reject);
