@@ -122,6 +122,9 @@ function Promise (fnc){
 	this.reject = function(value){
 		return new Promise((resolve,reject)=>reject(value))
 	}
+	//all方法
+	//计数promise个数，逐个执行存值，返回值
+	this.all
 	//fn执行
 	try {
 		fnc(resolve,reject);
