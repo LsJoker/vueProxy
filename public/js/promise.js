@@ -124,7 +124,43 @@ function Promise (fnc){
 	}
 	//all方法
 	//计数promise个数，逐个执行存值，返回值
-	this.all
+	this.all=function(arr) {
+		return new Promise(function(resolve,reject){
+			let args = [].prototype.slice.call(arr);
+			let restLen = args.length;
+			function res(idx,itemPromise) {
+				try {
+					if (itemPromise && typeof itemPromise.then === "function") {
+						itemPromise.then.call(itemPromise,function(itemPromise){
+							res(i,itemPromise);
+						},reject)
+						return;
+					}
+					args[i] = itemPromise;
+					if (--restLen === 0) {
+						resolve(args);
+					}
+				} catch(ex) {
+					reject(ex);
+				}
+				
+
+			}
+
+			for (let i=0;i<args.length;i++) {
+				res(i,args[i]);
+			}
+		})		
+	}
+
+	//race
+	this.race = function(arr) {
+		return new Promise(function(resolve,reject){
+			for (let i=0;i<arr.length;i++) {
+				arr[i].then.call(arr[i],resolve,reject)
+			}
+		})
+	}
 	//fn执行
 	try {
 		fnc(resolve,reject);
