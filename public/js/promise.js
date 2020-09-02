@@ -170,15 +170,150 @@ function Promise (fnc){
 	
 }
 //原理参照
-new Promise(function(resolve,reject){
-	// resolve(1)
-	// reject(0)
-	console.log(32)
-	resolve(1)
-}).then(function(resolve,reject) {
-	console.lo(resolve);
-}).catch((ex)=>{
-	debugger
-	console.log(ex)
-})
+// new Promise(function(resolve,reject){
+// 	// resolve(1)
+// 	// reject(0)
+// 	console.log(32)
+// 	resolve(1)
+// }).then(function(resolve,reject) {
+// 	return new Promise((resolve,reject)=>{
+// 		resolve(3)
+// 	})
+// }).then((ex)=>{
+// 	debugger
+// 	console.log(ex)
+// })
 
+// function Promise (fn) {
+// 	let state = "pending";
+// 	let val = undefined;
+// 	const cbs = [];
+
+// 	function resolve(newVal){
+// 		const fnR= ()=>{
+// 			if (state!=="pending") return 
+// 			if(newVal && newVal.then && typeof newVal.then === "function") {
+// 				const {then} = newVal.then;
+// 				then.call(newVal,resolve,reject)
+// 			}
+// 			state = "fullfilled"
+// 			val = newVal
+// 			try{
+// 				handleCb();
+// 			}catch(ex) {
+// 				reject(ex)
+// 			}
+// 		}
+// 		setTimeout(fnR,0)
+// 	}
+
+// 	function reject(error){
+// 		const fnR= ()=>{
+// 			if (state!=="pending") return 
+// 			if(error && error.then && typeof error.then === "function") {
+// 				const {then} = newVal.then;
+// 				then.call(error,resolve,reject)
+// 			}
+// 			state = "rejected"
+// 			val = error
+// 			try{
+// 				handleCb();
+// 			}catch(ex) {
+// 				reject(ex)
+// 			}
+// 		}
+// 		setTimeout(fnR,0)
+// 	}
+
+// 	function handleCb(){
+// 		while(cbs.length>0) {
+// 			const cbFn = cbs.shift()
+// 			handle(cbfn)
+// 		}
+// 	}
+
+// 	function handle(cbFn) {
+// 		if (state === "pending") {
+// 			cbs.push(cbFn)
+// 			return
+// 		}
+// 		if (state === "fullfilled") {
+// 			if (!cbFn.onfullfilled) {
+// 				resolve(val)
+// 				return 
+// 			} else {
+// 				const res = cbFn.onfullfilled(val)
+// 				resolve(res)
+// 			}
+// 		}
+// 	}
+
+// 	this.then = (onfullfilled,onrejected)=>{
+// 		return new Promise((resolve,reject)=>{
+// 			handle({
+// 				resolve,
+// 				reject,
+// 				onfullfilled,
+// 				onrejected
+// 			})
+// 		})
+// 	}
+
+// 	this.catch = (onrejected)=>{
+// 		return this.then(null,onrejected)
+// 	}
+
+// 	this.finally = (onDone)=>{
+// 		return this.then(onDone,onDone)
+// 	}
+
+// 	this.resolve = (value)=>{
+// 		if (value instanceof Promise) {
+// 			return value
+// 		} else if (value && value.then && typeof value.then === "function") {
+// 			let thenFunc = value.then;
+// 			return new Promise(resolve=>{
+// 				thenFunc(resolve);
+// 			})
+// 		} else if (value) {
+// 			return new Promise (resolve=>resolve(value))
+// 		} else {
+// 			return new Promise (resolve=>resolve())
+// 		}
+// 	}
+
+// 	try {
+// 		fn(resolve,reject)
+// 	}catch(ex) {
+// 		reject(ex)
+// 	}
+
+// }
+
+debugger
+new Promise(resolve=>{
+	resolve(1);
+	Promise.resolve({
+		then:function(resolve,reject){
+			console.log(2);
+			resolve(3)
+		}
+	}).then(t=>console.log(t))
+	console.log(4);
+}).then(t=>console.log(t));
+console.log(5);
+// 	// 控制台输出：45213
+// 	// 下面按照最开始的理解，将上述代码进行转换
+// 	newPromise(resolve=>{
+// 		resolve(1);
+// 		newPromise(resolve=>{
+// 			console.log(2);
+// 			resolve(3)
+// 		}).then((t)=>console.log(t));
+// 		console.log(4);
+// 	}).then(t=>console.log(t));
+// 	console.log(5);
+// 	控制台输出24531
+
+// 	1进
+// 	45213
