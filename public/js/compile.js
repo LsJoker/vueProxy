@@ -1,5 +1,5 @@
 //compil编译
-import Watcher from './compile.js'
+import Watcher from './watcher.js'
 export default class Compile {
   constructor(el, vm) {
     this.vm = vm;
