@@ -20,6 +20,7 @@ export class Watcher {
   constructor(vm, exp, cb){
     this.cb = cb;
     this.vm = vm;
+     
     this.exp = exp;
     this.value = this.get();  // 将自己添加到订阅器的操作
   }
