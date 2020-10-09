@@ -1,5 +1,5 @@
 //VUe 
-export //观察者Observer
+export 
 class Dep{
   constructor(){
       //订阅的数组
