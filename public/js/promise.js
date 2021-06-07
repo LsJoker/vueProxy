@@ -47,7 +47,7 @@ function Promise (fnc){
 			//下一个回调执行
 			handleCb(error);
 		}
-		setTimeout(fn,0);
+		setTimeout(fn,0); 
 	}
 	function handleCb (newVal) {
 		while(cbs.length>0) {
@@ -143,8 +143,6 @@ function Promise (fnc){
 				} catch(ex) {
 					reject(ex);
 				}
-				
-
 			}
 
 			for (let i=0;i<args.length;i++) {
